@@ -3540,8 +3540,14 @@ void CInode::validate_disk_state(CInode::validated_data *results,
       }
 
       // extract the backtrace, and compare it to a newly-constructed one
-      bufferlist::iterator p = bl.begin();
-      ::decode(results->backtrace.ondisk_value, p);
+      try {
+        bufferlist::iterator p = bl.begin();
+        ::decode(results->backtrace.ondisk_value, p);
+      } catch (buffer::malformed_input) {
+        results->backtrace.passed = false;
+        results->backtrace.error_str << "failed to decode on-disk backtrace!";
+        return true;
+      }
       int64_t pool;
       if (in->is_dir())
         pool = in->mdcache->mds->mdsmap->get_metadata_pool();
