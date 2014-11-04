@@ -11515,8 +11515,13 @@ public:
     mdcache(mdc), mdr(mdr), on_finish(fin), formatter(f) {}
 
   void finish(int r) {
-    if (r >= 0)
+    if (r >= 0) { // we got into the scrubbing dump it
       results.dump(formatter);
+    } else { // we failed the lookup or something; dump ourselves
+      formatter->open_object_section("results");
+      formatter->dump_int("return_code", r);
+      formatter->close_section(); // results
+    }
     mdcache->request_finish(mdr);
     on_finish->complete(r);
   }
