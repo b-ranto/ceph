@@ -3620,11 +3620,14 @@ void CInode::validate_disk_state(CInode::validated_data *results,
 
     bool fetch_dirfrag_rstats() {
       MDSGatherBuilder gather(g_ceph_context);
-      for (map<frag_t,CDir*>::iterator p = in->dirfrags.begin();
-           p != in->dirfrags.end();
-           ++p) {
-        if (!p->second->is_complete())
-          p->second->fetch(gather.new_sub(), false);
+      std::list<frag_t> frags;
+      in->dirfragtree.get_leaves(frags);
+      for (list<frag_t>::iterator p = frags.begin();
+          p != frags.end();
+          ++p) {
+        CDir *dirfrag = in->get_or_open_dirfrag(in->mdcache, *p);
+        if (!dirfrag->is_complete())
+          dirfrag->fetch(gather.new_sub(), false);
       }
       if (gather.has_subs()) {
         gather.set_finisher(new MDSInternalContextWrapper(in->mdcache->mds,
