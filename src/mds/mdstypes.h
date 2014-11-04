@@ -315,6 +315,11 @@ inline bool operator==(const client_writeable_range_t& l,
  * inode_t
  */
 struct inode_t {
+  /**
+   * ***************
+   * Do not forget to add any new fields to the compare() function.
+   * ***************
+   */
   // base (immutable)
   inodeno_t ino;
   uint32_t   rdev;    // if special file
