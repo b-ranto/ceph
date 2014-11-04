@@ -3520,9 +3520,12 @@ void CInode::validate_disk_state(CInode::validated_data *results,
 
       results->passed_validation = false; // we haven't finished it yet
 
-      in->fetch_backtrace(new C_OnFinisher(get_callback(BACKTRACE),
-                                           &in->mdcache->mds->finisher),
-                          &bl);
+      MDSIOContextWrapper *mdsioc =
+          new MDSIOContextWrapper(in->mdcache->mds, get_callback(BACKTRACE));
+      C_OnFinisher *conf = new C_OnFinisher(mdsioc,
+                                            &in->mdcache->mds->finisher);
+
+      in->fetch_backtrace(conf, &bl);
       return false;
     }
 
