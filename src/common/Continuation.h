@@ -37,6 +37,7 @@
  * is completed while any other stage Callbacks are outstanding. It's best to
  * be serial unless you want to maintain your own metadata about which stages
  * are still pending.
+ *
  * In fact, there are only two situations in which a stage should return
  * true while others are running:
  * 1) A Callback was issued and completed in the same thread,
