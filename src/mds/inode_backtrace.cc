@@ -124,15 +124,20 @@ int inode_backtrace_t::compare(const inode_backtrace_t& other,
   int min_size = MIN(ancestors.size(),other.ancestors.size());
   *divergent = false;
   if (min_size == 0)
-    return 0;;;
+    return 0;
   int comparator = 0;
   if (ancestors[0].version > other.ancestors[0].version)
     comparator = 1;
   else if (ancestors[0].version < other.ancestors[0].version)
     comparator = -1;
   for (int i = 1; i < min_size; ++i) {
-    if (*divergent)
+    if (*divergent) {
+      /**
+       * we already know the dentries and versions are
+       * incompatible; no point checking farther
+       */
       break;
+    }
     if (ancestors[i].dirino != other.ancestors[i].dirino) {
       *equivalent = false;
       if (ancestors[i-1].version < other.ancestors[i-1].version) {
@@ -157,6 +162,7 @@ int inode_backtrace_t::compare(const inode_backtrace_t& other,
       comparator = -1;
     }
   }
-  *equivalent = true;
+  if (!*divergent)
+    *equivalent = true;
   return comparator;
 }
