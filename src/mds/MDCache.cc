@@ -11516,7 +11516,7 @@ public:
 
   void finish(int r) {
     if (r >= 0)
-      CInode::dump_validation_results(results, formatter);
+      results.dump(formatter);
     mdcache->request_finish(mdr);
     on_finish->complete(r);
   }
