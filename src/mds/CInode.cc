@@ -1141,7 +1141,7 @@ void CInode::_stored_backtrace(version_t v, Context *fin)
     fin->complete(0);
 }
 
-void CInode::fetch_backtrace(bufferlist *backtrace, Context *fin)
+void CInode::fetch_backtrace(Context *fin, bufferlist *backtrace)
 {
   int64_t pool;
   if (is_dir())
