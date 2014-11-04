@@ -3536,6 +3536,7 @@ void CInode::validate_disk_state(CInode::validated_data *results,
       results->backtrace.ondisk_read_retval = rval;
       results->backtrace.passed = false; // we'll set it true if we make it
       if (rval != 0) {
+        results->backtrace.error_str << "failed to read off disk; see retval";
         return true;
       }
 
@@ -3565,6 +3566,8 @@ void CInode::validate_disk_state(CInode::validated_data *results,
         results->backtrace.passed = false; // we couldn't validate :(
         if (divergent || memory_newer <= 0) {
           // we're divergent, or don't have a newer version to write
+          results->backtrace.error_str <<
+              "On-disk backtrace is divergent or newer";
           return true;
         }
       }
@@ -3612,8 +3615,11 @@ void CInode::validate_disk_state(CInode::validated_data *results,
         bool divergent = false;
         int r = i.compare(si, &divergent);
         results->inode.passed = !divergent && r >= 0;
-        if (!results->inode.passed)
+        if (!results->inode.passed) {
+          results->inode.error_str <<
+              "On-disk inode is divergent or newer than in-memory one!";
           return true;
+        }
       }
       return fetch_dirfrag_rstats();
     }
@@ -3645,6 +3651,7 @@ void CInode::validate_disk_state(CInode::validated_data *results,
       results->raw_rstats.ondisk_read_retval = rval;
       results->raw_rstats.passed = false; // we'll set it true if we make it
       if (rval != 0) {
+        results->raw_rstats.error_str << "Failed to read dirfrags off disk";
         return true;
       }
 
@@ -3664,6 +3671,8 @@ void CInode::validate_disk_state(CInode::validated_data *results,
       results->raw_rstats.memory_value = in->inode.rstat;
       sub_info.rsubdirs++; // it gets one to account for self
       if (!sub_info.same_sums(in->inode.rstat)) {
+        results->raw_rstats.error_str
+        << "freshly-calculated rstats don't match existing ones";
         return true;
       }
       results->raw_rstats.passed = true;
