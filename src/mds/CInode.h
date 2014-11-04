@@ -902,6 +902,8 @@ public:
 
     validated_data() : performed_validation(false),
         passed_validation(false) {}
+
+    void dump(Formatter *f) const;
   };
 
   /**
