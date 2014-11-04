@@ -96,6 +96,20 @@ public:
   }
 };
 
+/**
+ * Wrap a regular Context up as an IO Context. Useful
+ * if you're trying to work with one of our more generic frameworks.
+ */
+class MDSIOContextWrapper : public MDSIOContextBase
+{
+protected:
+  MDS *mds;
+  Context *fin;
+  MDS *get_mds();
+public:
+  MDSIOContextWrapper(MDS *m, Context *c) : mds(m), fin(c) {}
+  void finish(int r);
+};
 
 /**
  * No-op for callers expecting MDSInternalContextBase
