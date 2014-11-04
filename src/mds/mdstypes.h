@@ -206,7 +206,8 @@ struct nest_info_t : public scatter_info_t {
     return rctime == o.rctime &&
         rbytes == o.rbytes &&
         rfiles == o.rfiles &&
-        rsubdirs == o.rsubdirs;
+        rsubdirs == o.rsubdirs &&
+        rsnaprealms == o.rsnaprealms;
   }
 
   void encode(bufferlist &bl) const;
