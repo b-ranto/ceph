@@ -1,3 +1,7 @@
+if ENABLE_CLIENT
+if WITH_RADOS
+if WITH_RBD
+
 EXTRA_DIST = tracing-common.h
 
 if WITH_LTTNG
@@ -77,3 +81,7 @@ CLEANFILES = \
 	$(nodist_librados_tp_la_SOURCES) \
 	$(nodist_librbd_tp_la_SOURCES) \
 	$(nodist_libos_tp_la_SOURCES)
+
+endif # WITH_RBD
+endif # WITH_RADOS
+endif # ENABLE_CLIENT

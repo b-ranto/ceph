@@ -1,3 +1,5 @@
+if ENABLE_CLIENT
+if WITH_RBD
 librbd_la_SOURCES = \
 	librbd/librbd.cc \
 	librbd/AioCompletion.cc \
@@ -33,3 +35,5 @@ noinst_HEADERS += \
 	librbd/parent_types.h \
 	librbd/SnapInfo.h \
 	librbd/WatchCtx.h
+endif # WITH_RBD
+endif # ENABLE_CLIENT

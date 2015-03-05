@@ -1,3 +1,5 @@
+if ENABLE_CLIENT
+if WITH_RADOS
 librados_internal_la_SOURCES = \
 	librados/RadosClient.cc \
 	librados/IoCtxImpl.cc \
@@ -35,3 +37,5 @@ noinst_HEADERS += \
 	librados/RadosClient.h \
 	librados/RadosXattrIter.h \
 	librados/ListObjectImpl.h
+endif # WITH_RADOS
+endif # ENABLE_CLIENT

@@ -2,6 +2,8 @@ libmon_types_la_SOURCES = \
 	mon/PGMap.cc
 noinst_LTLIBRARIES += libmon_types.la
 
+if ENABLE_SERVER
+if WITH_MON
 libmon_la_SOURCES = \
 	mon/Monitor.cc \
 	mon/Paxos.cc \
@@ -46,4 +48,5 @@ noinst_HEADERS += \
 	mon/QuorumService.h \
 	mon/Session.h \
 	mon/mon_types.h
-
+endif # WITH_MON
+endif # ENABLE_SERVER

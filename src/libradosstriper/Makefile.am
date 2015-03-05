@@ -1,3 +1,5 @@
+if ENABLE_CLIENT
+if WITH_RADOSSTRIPER
 libradosstriper_la_SOURCES = \
 	libradosstriper/libradosstriper.cc \
 	libradosstriper/RadosStriperImpl.cc \
@@ -17,3 +19,5 @@ lib_LTLIBRARIES += libradosstriper.la
 noinst_HEADERS += \
 	libradosstriper/RadosStriperImpl.h \
 	libradosstriper/MultiAioCompletionImpl.h
+endif # WITH_RADOSSTRIPER
+endif # ENABLE_CLIENT

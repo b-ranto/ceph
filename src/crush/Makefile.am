@@ -27,4 +27,3 @@ noinst_HEADERS += \
 #	$(srcdir)/crush/crush.h \
 #	$(srcdir)/crush/mapper.h \
 #	$(srcdir)/crush/types.h
-
