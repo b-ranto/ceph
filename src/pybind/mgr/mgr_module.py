@@ -685,12 +685,15 @@ class MgrModule(ceph_module.BaseMgrModule):
 
     # TODO: improve C++->Python interface to return just
     # the latest if that's all we want.
-    def get_latest(self, daemon_type, daemon_name, counter):
+    def get_latest(self, daemon_type, daemon_name, counter, avgcount = False):
         data = self.get_counter(daemon_type, daemon_name, counter)[counter]
-        if data:
-            return data[-1][1]
-        else:
+        if not data:
             return 0
+
+        if avgcount:
+            return data[-1][2]
+        else:
+            return data[-1][1]
 
     def get_all_perf_counters(self, prio_limit=PRIO_USEFUL):
         """
@@ -733,10 +736,31 @@ class MgrModule(ceph_module.BaseMgrModule):
                     if counter_schema['priority'] < prio_limit:
                         continue
 
-                    counter_info = counter_schema
-                    counter_info['value'] = self.get_latest(service['type'], service['id'],
-                                                            counter_path)
-                    result[svc_full_name][counter_path] = counter_info
+                    # Deal with long running avgs properly
+                    if counter_schema['type'] & self.PERFCOUNTER_LONGRUNAVG:
+                        counter_sum = dict(counter_schema)
+                        counter_sum['value' ] = self.get_latest(
+                            service['type'],
+                            service['id'],
+                            counter_path
+                        )
+                        result[svc_full_name][counter_path + '_sum'] = counter_sum
+
+                        counter_avgcount = dict(counter_schema)
+                        # The avgcount is always a regular integer, not time
+                        counter_avgcount['type'] = self.PERFCOUNTER_U64 + self.PERFCOUNTER_LONGRUNAVG
+                        counter_avgcount['value' ] = self.get_latest(
+                            service['type'],
+                            service['id'],
+                            counter_path,
+                            avgcount = True
+                        )
+                        result[svc_full_name][counter_path + '_count'] = counter_avgcount
+                    else:
+                        counter_info = counter_schema
+                        counter_info['value'] = self.get_latest(service['type'], service['id'],
+                                                                counter_path)
+                        result[svc_full_name][counter_path] = counter_info
 
         self.log.debug("returning {0} counter".format(len(result)))
 
