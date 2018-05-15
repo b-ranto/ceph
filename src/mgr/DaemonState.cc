@@ -141,6 +141,7 @@ void DaemonPerfCounters::update(MMgrReport *report)
   for (const auto &t : report->declare_types) {
     types.insert(std::make_pair(t.path, t));
     session->declared_types.insert(t.path);
+    instances[t.path] = PerfCounterInstance(t.type);
   }
   // Remove any old types
   for (const auto &t : report->undeclare_types) {
@@ -162,9 +163,11 @@ void DaemonPerfCounters::update(MMgrReport *report)
     if (t.type & PERFCOUNTER_LONGRUNAVG) {
       decode(avgcount, p);
       decode(avgcount2, p);
+      instances[t_path].push_avg(now, val, avgcount);
     }
-    // TODO: interface for insertion of avgs
-    instances[t_path].push(now, val);
+    else {
+      instances[t_path].push(now, val);
+    }
   }
   DECODE_FINISH(p);
 }
@@ -179,3 +182,7 @@ void PerfCounterInstance::push(utime_t t, uint64_t const &v)
   buffer.push_back({t, v});
 }
 
+void PerfCounterInstance::push_avg(utime_t t, uint64_t const &v, uint64_t const &c)
+{
+  avg_buffer.push_back({t, v, c});
+}
