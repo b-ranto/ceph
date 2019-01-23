@@ -1108,6 +1108,10 @@ install -m 0644 -D etc/sysconfig/ceph %{buildroot}%{_fillupdir}/sysconfig.%{name
 %endif
 install -m 0644 -D systemd/ceph.tmpfiles.d %{buildroot}%{_tmpfilesdir}/ceph-common.conf
 install -m 0644 -D systemd/50-ceph.preset %{buildroot}%{_libexecdir}/systemd/system-preset/50-ceph.preset
+# This helps us override the old system-provided librados2 library in RHEL by preloading librados3 library for libvirtd/qemu
+%if 0%{?rhel}
+install -m 0644 -D systemd/30-librados3.conf %{buildroot}%{_sysconfdir}/systemd/system/libvirtd.service.d/30-librados3.conf
+%endif
 mkdir -p %{buildroot}%{_sbindir}
 install -m 0644 -D src/logrotate.conf %{buildroot}%{_sysconfdir}/logrotate.d/ceph
 chmod 0644 %{buildroot}%{_docdir}/ceph/sample.ceph.conf
@@ -1711,6 +1715,9 @@ fi
 %{_libdir}/ceph/libceph-common.so.*
 %if %{with lttng}
 %{_libdir}/librados_tp.so.*
+%endif
+%if 0%{?rhel}
+%{_sysconfdir}/systemd/system/libvirtd.service.d/30-librados3.conf
 %endif
 
 %post -n librados3 -p /sbin/ldconfig
